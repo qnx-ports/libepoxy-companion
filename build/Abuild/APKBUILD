@@ -1,0 +1,41 @@
+pkgname=libepoxy
+pkgver=1.5.10
+pkgrel=1
+pkgdesc="Direct Rendering Manager runtime library"
+url="https://github.com/anholt/libepoxy"
+arch="all"
+license="MIT"
+options="!check"
+depends="qnx-gles"
+depends_dev="gles-headers egl-headers"
+makedepends="$depends_dev meson ninja pkgconf pkgconf-dev libexpat"
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/anholt/libepoxy/archive/refs/tags/$pkgver.tar.gz
+	0001-Add-GLES-support-on-QNX-7.1-and-8.0.patch
+"
+
+build() {
+    meson \
+        -Ddocs=false \
+        -Degl=yes \
+        -Dglx=no \
+        -Dx11=false \
+        -Dtests=true \
+        --prefix=/usr \
+        . output
+    meson compile -C output
+}
+
+check() {
+    meson test --print-errorlogs -C output
+}
+
+package() {
+    DESTDIR="$pkgdir" meson install --no-rebuild -C output
+}
+
+
+sha512sums="
+6786f31c6e2865e68a90eb912900a86bf56fd3df4d78a477356886ac3b6ef52ac887b9c7a77aa027525f868ae9e88b12e5927ba56069c2e115acd631fca3abee  libepoxy-1.5.10.tar.gz
+ae3ed31a7b39633ff97ac3532316b53eb2b8ea7576bfeb52401e725580a3ff665b6e8438a8b6274df3a7f6d5800bfaaf5612833aa8a1a1ed4f00fafe177eac5a  0001-Add-GLES-support-on-QNX-7.1-and-8.0.patch
+"
